@@ -24,5 +24,5 @@ public class TarefaModel {
     private LocalDateTime data_comeco;
     private String prioridade;
 
-    private UUID usuario_id;
+    private UUID idUser;
 }

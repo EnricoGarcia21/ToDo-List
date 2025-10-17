@@ -20,7 +20,7 @@ public class TaskRestController {
     private TaskRepository taskRepository;
 
     @PostMapping(value = "create")
-    public ResponseEntity<?> create(@RequestBody TarefaModel tarefa, HttpServletRequest request) {
+    public ResponseEntity<Object> create(@RequestBody TarefaModel tarefa, HttpServletRequest request) {
 
         var idUser = request.getAttribute("idUser");
         tarefa.setId((UUID) idUser);
@@ -48,6 +48,13 @@ public class TaskRestController {
         var idUser = request.getAttribute("idUser");
         var tasks = this.taskRepository.findByIdUser((UUID) idUser);
         return tasks;
+    }
+    @PutMapping("/{id}")
+    public TarefaModel update(@RequestBody TarefaModel tarefa, HttpServletRequest request,@PathVariable UUID id) {
+        var idUser = request.getAttribute("idUser");
+        tarefa.setId((UUID) idUser);
+        tarefa.setId(id);
+        return this.taskRepository.save(tarefa);
     }
 
 }

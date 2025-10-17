@@ -23,7 +23,7 @@ public class FilterTaskAuth extends OncePerRequestFilter {
             throws ServletException, IOException {
 
             var servletPath = request.getServletPath();
-            if(servletPath.equals("/task")){
+            if(servletPath.startsWith("/task")){
                 var autorization = request.getHeader("Authorization");
 
                 //metodo para receber como parametro, paar pegar o asic e cacular o tamanho dela
