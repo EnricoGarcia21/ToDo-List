@@ -1,23 +1,25 @@
-# Etapa 1: Build do projeto com Maven
+# Etapa 1: build do projeto com Maven
 FROM maven:3.9.9-eclipse-temurin-17 AS build
 
 WORKDIR /app
 
-# Copia o arquivo pom.xml e baixa dependências antes (para cache eficiente)
+# Copia o arquivo pom.xml e baixa dependências (melhor cache)
 COPY pom.xml .
 RUN mvn dependency:go-offline -B
 
-# Copia o código-fonte e constrói o .jar
+# Copia o código fonte do projeto
 COPY src ./src
+
+# Compila o projeto e gera o .jar
 RUN mvn clean package -DskipTests
 
-# Etapa 2: Imagem final, leve
+# Etapa 2: imagem final leve com o JDK
 FROM openjdk:17-jdk-slim
 
 WORKDIR /app
 EXPOSE 8080
 
-# Copia o .jar gerado da etapa de build
+# Copia o .jar gerado na etapa anterior
 COPY --from=build /app/target/*.jar app.jar
 
 # Define o ponto de entrada
