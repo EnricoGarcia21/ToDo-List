@@ -1,16 +1,24 @@
-FROM ubuntu:latest AS build
+# Etapa 1: Build do projeto com Maven
+FROM maven:3.9.9-eclipse-temurin-17 AS build
 
-RUN apt-get update
-RUN apt-get install openjdk-17-jdk -y
+WORKDIR /app
 
-COPY . .
+# Copia o arquivo pom.xml e baixa dependências antes (para cache eficiente)
+COPY pom.xml .
+RUN mvn dependency:go-offline -B
 
-RUN apt-get install maven -y
-RUN mvn clean install
+# Copia o código-fonte e constrói o .jar
+COPY src ./src
+RUN mvn clean package -DskipTests
 
+# Etapa 2: Imagem final, leve
 FROM openjdk:17-jdk-slim
+
+WORKDIR /app
 EXPOSE 8080
 
-COPY --from=build /target/todolist-1.0.0.jar app.jar
+# Copia o .jar gerado da etapa de build
+COPY --from=build /app/target/*.jar app.jar
 
+# Define o ponto de entrada
 ENTRYPOINT ["java", "-jar", "app.jar"]
