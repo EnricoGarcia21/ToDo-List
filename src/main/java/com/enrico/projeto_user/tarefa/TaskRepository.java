@@ -7,4 +7,5 @@ import java.util.UUID;
 
 public interface TaskRepository extends JpaRepository<TarefaModel, UUID> {
     List<TarefaModel> findByIdUser(UUID idUser);
+
 }

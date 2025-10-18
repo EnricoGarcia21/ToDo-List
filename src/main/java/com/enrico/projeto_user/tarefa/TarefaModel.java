@@ -25,4 +25,11 @@ public class TarefaModel {
     private String prioridade;
 
     private UUID idUser;
+
+    public void setTitulo(String titulo) throws Exception {
+        if(titulo.length() > 50){
+            throw new Exception("O campo title deve ter no maxiumo 50 caracteres");
+        }
+        this.titulo = titulo;
+    }
 }

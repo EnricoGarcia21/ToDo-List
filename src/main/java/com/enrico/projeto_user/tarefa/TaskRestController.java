@@ -1,5 +1,6 @@
 package com.enrico.projeto_user.tarefa;
 
+import com.enrico.projeto_user.util.Util;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -49,12 +50,25 @@ public class TaskRestController {
         var tasks = this.taskRepository.findByIdUser((UUID) idUser);
         return tasks;
     }
-    @PutMapping("/{id}")
-    public TarefaModel update(@RequestBody TarefaModel tarefa, HttpServletRequest request,@PathVariable UUID id) {
-        var idUser = request.getAttribute("idUser");
-        tarefa.setId((UUID) idUser);
-        tarefa.setId(id);
-        return this.taskRepository.save(tarefa);
-    }
 
+
+
+    @PutMapping("/{id}")
+    public ResponseEntity update(@RequestBody TarefaModel tarefa,@PathVariable UUID id,HttpServletRequest request) {
+        var task = this.taskRepository.findById(id).orElse(null);
+
+        if(task == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Tarefa nao encontrada");
+        }
+        var idUser = request.getAttribute("idUser");
+
+
+        if(!task.getIdUser().equals(idUser)){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Usuario nao tem permissao para alterar a tarefa");
+        }
+        Util.copyNonNullProperties(tarefa, task);
+
+        var taskUpdate = this.taskRepository.save(task);
+        return ResponseEntity.ok(this.taskRepository.save(taskUpdate));
+    }
 }
